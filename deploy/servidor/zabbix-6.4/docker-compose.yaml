@@ -35,6 +35,7 @@ services:
     restart: "${RESTART_POLICY}"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ${DATA_DIRECTORY}/etc/zabbix/zabbix_agentd.d/:/etc/zabbix/zabbix_agentd.d/
       - ${DATA_DIRECTORY}/usr/lib/zabbix/alertscripts:/usr/lib/zabbix/alertscripts:ro
       - ${DATA_DIRECTORY}/usr/lib/zabbix/externalscripts:/usr/lib/zabbix/externalscripts:ro
       - ${DATA_DIRECTORY}/var/lib/zabbix/dbscripts:/var/lib/zabbix/dbscripts:ro
@@ -50,14 +51,14 @@ services:
       nofile:
         soft: 20000
         hard: 40000
-    deploy:
-      resources:
-        limits:
-          cpus: '0.70'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
+        #    deploy:
+        #      resources:
+        #        limits:
+        #          cpus: '0.70'
+        #          memory: 1G
+        #        reservations:
+        #          cpus: '0.5'
+        #          memory: 512M
     env_file:
     - ${ENV_VARS_DIRECTORY}/.env_srv
     - ${ENV_VARS_DIRECTORY}/.env_db_mysql
@@ -90,14 +91,14 @@ services:
       - ${DATA_DIRECTORY}/etc/ssl/nginx:/etc/ssl/nginx:ro
       - ${DATA_DIRECTORY}/usr/share/zabbix/modules/:/usr/share/zabbix/modules/:ro
     tmpfs: /tmp
-    deploy:
-      resources:
-        limits:
-          cpus: '0.70'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
+    #    deploy:
+    #      resources:
+    #        limits:
+    #          cpus: '0.70'
+    #          memory: 512M
+    #        reservations:
+    #          cpus: '0.5'
+    #          memory: 256M
     env_file:
       - ${ENV_VARS_DIRECTORY}/.env_web
       - ${ENV_VARS_DIRECTORY}/.env_db_mysql
@@ -169,10 +170,14 @@ services:
     user:  "${UID}:${GID}"
     volumes:
       - '${DATA_DIRECTORY}/grafana-data:/var/lib/grafana:rw'
+      - ${ENV_VARS_DIRECTORY}/grafana/config:/etc/grafana-config
     ports:
       - '3000:3000'
     environment: 
       - GF_INSTALL_PLUGINS=alexanderzobnin-zabbix-app, grafana-clock-panel
+      - GF_SERVER_ROOT_URL=http://monitor-grafana.ramper.com.br/
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+
     depends_on:
       - mysql-server
       - zabbix-server

@@ -1,0 +1,14 @@
+# Arquivo de configuração do Zabbix Agent 2
+#Server={{ server_ip }}
+#Hostname={{ hostname }}
+#novo={{ meu_hostname }}
+#{{ other_parameters }}
+
+
+PidFile=/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+Server={{ server_ip }}
+ServerActive={{ server_ip }}
+HostMetadata={{ meu_hostname }}
+Include=/etc/zabbix/zabbix_agentd.d/*.conf

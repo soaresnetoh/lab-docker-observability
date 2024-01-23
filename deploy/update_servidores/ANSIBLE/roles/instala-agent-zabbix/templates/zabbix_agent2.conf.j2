@@ -1,0 +1,16 @@
+# Arquivo de configuração do Zabbix Agent 2
+
+PidFile=/var/run/zabbix/zabbix_agent2.pid
+LogFile=/var/log/zabbix/zabbix_agent2.log
+LogFileSize=0
+Include=/etc/zabbix/zabbix_agent2.d/*.conf
+PluginSocket=/run/zabbix/agent.plugin.sock
+ControlSocket=/run/zabbix/agent.sock
+Include=/etc/zabbix/zabbix_agent2.d/plugins.d/*.conf
+Server={{ server_ip }}
+ServerActive={{ server_ip }}
+HostMetadata={{ meu_hostname }}
+#HostInterfaceItem=system.hostname
+#Hostname={{ meu_hostname }}-{{ hostname }}
+BufferSize=10000
+

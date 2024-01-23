@@ -1,0 +1,24 @@
+#!/bin/bash
+SOURCE=($(cat /etc/fstab | egrep 'cifs|nfs' | awk '{ print $1 }'))
+DESTINATION=($(cat /etc/fstab | egrep 'cifs|nfs' | awk '{ print $2 }'))
+FILENAME="mounttest.txt"
+for ((i = 0; i < ${#SOURCE[@]}; i++)); do
+TEST=$(findmnt -S "${SOURCE[$i]}" -T "${DESTINATION[$i]}" | awk '{ print $2 }' | grep -iv source)
+if [ -z $TEST ]; then
+echo "Mount pointing to ${DESTINATION[$i]} is not mounted"
+else
+n=0
+RESULT=0
+until [ $n -ge 3 ];do
+timeout -s 15 5 touch "${DESTINATION[$i]}/${FILENAME}" > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+RESULT=$((RESULT+1))
+fi
+n=$[$n+1]
+sleep 1
+done
+if [ $RESULT -ge 2 ]; then
+echo "There is a connectivity issue with ${SOURCE[$i]}"
+fi
+fi
+done

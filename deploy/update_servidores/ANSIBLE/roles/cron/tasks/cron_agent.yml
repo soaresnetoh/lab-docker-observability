@@ -1,0 +1,21 @@
+---
+- name: Copiar template de configuração do Zabbix Agent 2
+  template:
+    src: update_hostname.sh.j2
+    dest: /usr/local/bin/update_hostname.sh
+    mode: '0755'
+  # notify: Restart and enable zabbix-agent2
+    # Define as variáveis a serem usadas no template (exemplo)
+  # vars:
+  #   server_ip: "{{ zabbix_server }}"
+  #   hostname: "{{ ansible_hostname }}"
+  #   other_parameters: "#outros_parametros_de_configuracao"
+
+
+# @reboot /usr/local/bin/update_hostname.sh > /tmp/update_hostname.log 2>&1
+- name: Creates an entry like "@reboot /usr/local/bin/update_hostname.sh > /tmp/update_hostname.log 2>&1"
+  ansible.builtin.cron:
+    name: "Atualizando o hostname no reboot do servidor"
+    special_time: reboot
+    job: "/usr/local/bin/update_hostname.sh > /tmp/update_hostname.log 2>&1"
+

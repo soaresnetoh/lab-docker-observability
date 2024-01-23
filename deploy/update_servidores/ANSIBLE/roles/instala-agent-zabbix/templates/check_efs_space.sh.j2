@@ -1,0 +1,5 @@
+#!/bin/bash
+# Script para verificar o espaço usado em um diretório EFS específico
+#df -h /mnt/zabbix | awk 'NR==2{print $3}'
+drive=$(df | grep fs- | awk 'NR==1{print $6}')
+df $drive | awk 'NR==2{print $3}'

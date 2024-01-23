@@ -1,0 +1,79 @@
+---
+- name: Imprime todas as variaveis facts
+  ansible.builtin.debug:
+    var: ansible_facts
+
+- name: save all facts to host specific file
+  become: false
+  copy:
+    # content: "{{ ansible_delegated_vars[inventory_hostname].vars | to_nice_json }}"
+    content: "{{ ansible_facts  | to_nice_json }}"
+    dest: "{{ playbook_dir }}/{{ meu_hostname }}-{{ ansible_fqdn }}"
+  delegate_to: localhost
+
+- name: Show host's ip
+  debug: var=ansible_host
+  register: meu_ip
+
+- name: Copiar template de configuração do Zabbix Agent 2
+  become: false
+  template:
+    src: zabbix_agent2.conf.j2
+    dest: "{{ playbook_dir }}/zabbix_agent2.conf-{{ meu_hostname }}-{{ ansible_fqdn }}"
+    # dest: "{{ playbook_dir }}/{{ ansible_fqdn }}/zabbix_agent2.conf"
+    mode: '0644'
+  delegate_to: localhost
+
+  # Define as variáveis a serem usadas no template (exemplo)
+  vars:
+    server_ip: "{{ zabbix_server }}"
+    hostname: "{{ ansible_hostname }}"
+    # novo: "{{ hostvars[groups['all'][1]].meu_hostname }}"
+    other_parameters: "#outros_parametros_de_configuracao"
+
+
+
+
+
+
+
+
+
+
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ projeto }}"
+  
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ bitBucketUser }}"
+  
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ bitBucketPass }}"
+  
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ ansible_facts['hostname'] }}"
+  
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ sub_http_host }}"
+  
+# - name: Imprime variaveis
+#   ansible.builtin.debug:
+#     msg: "{{ repositoryApp }}"
+
+# - name: Copiando um template
+#   template:
+#     src: "templates/file.template"
+#     dest: "/tmp/file.conf"
+#   register: update_file_pwa
+
+# - name: guardando conteudo do template copiado
+#   command: cat /tmp/file.conf
+#   register: file
+
+# - name: Mostrando conteudo do template copiado
+#   debug:
+#     msg: "cat: {{ file.stdout }}"

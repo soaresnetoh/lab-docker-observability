@@ -1,0 +1,40 @@
+---
+- name: Create /etc/zabbix/scripts directory
+  ansible.builtin.file:
+    path: /etc/zabbix/scripts
+    state: directory
+    owner: zabbix
+    group: zabbix
+    recurse: yes
+    mode: 0755
+
+- name: enable external_scripts
+  template:
+    src: "{{ item.nome }}"
+    dest: "/etc/zabbix/scripts/{{ item.novonome }}"
+  with_items:
+    - { nome: 'check_efs_space.sh.j2', novonome: 'check_efs_space.sh'}
+    # - { nome: 'check_mount.sh.j2', novonome: 'check_mount.sh'}
+    - { nome: 'get_zabbix_hostname.sh.j2', novonome: 'get_zabbix_hostname.sh'}
+
+- name: Changing perm of "{{ item.novonome }}", adding "+x"
+  file: 
+    dest: "/etc/zabbix/scripts/{{ item.novonome }}"
+    mode: 0777
+  with_items:
+    - { novonome: 'check_efs_space.sh'}
+    # - { novonome: 'check_mount.sh'}
+    - { novonome: 'get_zabbix_hostname.sh'}
+
+- name: enable external_scripts
+  template:
+    src: "{{ item.nome }}"
+    dest: "/etc/zabbix/zabbix_agent2.d/{{ item.novonome }}"
+  with_items:
+    - { nome: 'userparameters.conf.j2', novonome: 'userparameters.conf'}
+
+- name: Restart and enable zabbix-agent2
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    state: restarted
+    enabled: true

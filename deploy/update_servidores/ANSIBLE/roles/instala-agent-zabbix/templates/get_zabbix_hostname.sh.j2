@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Extrai o valor da variável Hostname do arquivo zabbix_agent2.conf
+hostname=$(grep "^HostMetadata\s*=\s*" /etc/zabbix/zabbix_agent2.conf | awk -F "=" '{print $2}' | tr -d '[:space:]')
+nodename=$(uname -n)
+
+# Imprime o valor extraído
+echo $hostname-$nodename

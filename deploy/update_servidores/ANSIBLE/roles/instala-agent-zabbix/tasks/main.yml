@@ -1,0 +1,3 @@
+---
+- include: instala_agent.yml
+- include: configura_external_scripts.yml

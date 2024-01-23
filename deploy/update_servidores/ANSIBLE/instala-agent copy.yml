@@ -1,0 +1,54 @@
+---
+
+- name: Importar chave GPG do repositório Zabbix
+  apt_key:
+    url: 'https://repo.zabbix.com/zabbix-official-repo.asc'
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Adicionar repositório do Zabbix
+  apt_repository:
+    repo: 'deb http://repo.zabbix.com/zabbix/6.0/ubuntu {{ ansible_distribution_release }} main'
+    state: present
+    filename: 'zabbix.list'
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Verificar se o Zabbix Agent 2 está instalado
+  command: zabbix_agent2 --version
+  register: zabbix_check
+  ignore_errors: true
+
+- name: Determinar arquitetura do sistema
+  command: uname -m
+  register: arch_check
+
+- name: Instalar pacote Zabbix Agent 2 (amd64)
+  apt:
+    name: zabbix-agent2
+    state: present
+  when: "'amd64' in arch_check.stdout"
+
+- name: Instalar pacote Zabbix Agent 2 (arm)
+  apt:
+    name: zabbix-agent2
+    state: present
+    extra_opts: "--arch arm64"
+  when: "'arm' in arch_check.stdout"
+
+- name: Copiar template de configuração do Zabbix Agent 2
+  template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+    mode: '0644'
+
+  # Define as variáveis a serem usadas no template (exemplo)
+  vars:
+    server_ip: "{{ zabbix_server }}"
+    hostname: "{{ ansible_hostname }}"
+    other_parameters: "#outros_parametros_de_configuracao"
+
+- name: Reiniciar o serviço Zabbix Agent 2
+  service:
+    name: zabbix-agent2
+    state: restarted

@@ -1,0 +1,14 @@
+# Arquivo de configuração do Zabbix Agent 2
+#Server=18.116.95.45
+#Hostname=ip-172-31-4-222
+#novo=v3-staging-2
+##outros_parametros_de_configuracao
+
+
+PidFile=/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+Server=18.116.95.45
+ServerActive=18.116.95.45
+HostMetadata=v3-staging-2
+Include=/etc/zabbix/zabbix_agentd.d/*.conf

@@ -1,0 +1,87 @@
+---
+# - name: Ping hosts
+#   ping:
+- name: Remover pacote do Zabbix Agent (Debian/Ubuntu)
+  apt:
+    name: zabbix-agent  # nome do pacote do Zabbix Agent
+    state: absent
+
+- name: Check OS
+  ansible.builtin.debug:
+    msg: "{{ ansible_os_family }}-{{ ansible_distribution }}{{ ansible_distribution_version }}-{{ ansible_distribution_release }}-{{ansible_architecture}}"
+
+# - name: Populate service facts
+#   ansible.builtin.service_facts:
+
+- name: Download and install zabbix repo - arm64
+  ansible.builtin.apt:
+    deb: https://repo.zabbix.com/zabbix/6.4/{{ ansible_distribution | lower }}-arm64/pool/main/z/zabbix-release/zabbix-release_6.4-1+{{ ansible_distribution | lower }}{{ ansible_distribution_version }}_all.deb
+  when: ansible_os_family == "Debian" and ansible_architecture == "aarch64"
+
+- name: Download and install zabbix repo - x86_64
+  ansible.builtin.apt:
+    deb: https://repo.zabbix.com/zabbix/6.4/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_6.4-1+{{ ansible_distribution | lower }}{{ ansible_distribution_version }}_all.deb
+    update_cache: yes
+  when: ansible_os_family == "Debian" and ansible_architecture == "x86_64"
+
+- name: Install zabbix-agent2
+  ansible.builtin.apt:
+    pkg:
+    - zabbix-agent2
+    # - zabbix-agent2-plugin-*
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+# - name: Stop and disable zabbix-agent1
+#   ansible.builtin.systemd:
+#     name: zabbix-agent
+#     state: stopped
+#     enabled: false
+#   when: ansible_facts.services['zabbix-agent.service'] is defined
+
+# - name: Stop zabbix-agent2
+#   ansible.builtin.systemd:
+#     name: zabbix-agent2
+#     state: stopped
+#   when: ansible_facts.services['zabbix-agent2.service'] is defined
+#   notify: Restart and enable zabbix-agent2
+
+# - name: Check zabbix user, home dir and shell
+#   ansible.builtin.user:
+#     name: zabbix
+#     shell: /bin/bash
+#     home: /etc/zabbix
+#     state: present
+
+# - name: Create /etc/zabbix/scripts directory
+#   ansible.builtin.file:
+#     path: /etc/zabbix/scripts
+#     state: directory
+#     owner: zabbix
+#     group: zabbix
+#     mode: 0700
+
+
+- name: Copiar template de configuração do Zabbix Agent 2
+  template:
+    src: zabbix_agent2.conf.j2
+    dest: /etc/zabbix/zabbix_agent2.conf
+    mode: '0644'
+  notify: Restart and enable zabbix-agent2
+    # Define as variáveis a serem usadas no template (exemplo)
+  vars:
+    server_ip: "{{ zabbix_server }}"
+    hostname: "{{ ansible_hostname }}"
+    other_parameters: "#outros_parametros_de_configuracao"
+
+- name: Changing perm of "/var/log/syslog", adding "+r"
+  file: 
+    dest: /var/log/syslog 
+    mode: 644
+
+
+- name: Restart and enable zabbix-agent2
+  ansible.builtin.systemd:
+    name: zabbix-agent2
+    state: restarted
+    enabled: true

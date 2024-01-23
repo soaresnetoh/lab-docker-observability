@@ -1,0 +1,15 @@
+---
+# Prepare host
+- name: ZABBIX
+  hosts: all
+  become: true
+  user: ubuntu
+  gather_facts: yes
+  vars:
+    zabbix_server: "18.116.95.45"
+    
+  roles:
+  # - { role: facts, tags: ["facts"] } 
+  - { role: common, tags: ["common"] }
+  - { role: instala-agent, tags: ["instala-agent"] }
+  - { role: cron, tags: ["cron"] }

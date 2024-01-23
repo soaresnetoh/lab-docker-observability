@@ -1,0 +1,14 @@
+# Arquivo de configuração do Zabbix Agent 2
+#Server=18.116.95.45
+#Hostname=ip-172-31-1-98
+#novo=Jenkins
+##outros_parametros_de_configuracao
+
+
+PidFile=/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+Server=18.116.95.45
+ServerActive=18.116.95.45
+HostMetadata=Jenkins
+Include=/etc/zabbix/zabbix_agentd.d/*.conf

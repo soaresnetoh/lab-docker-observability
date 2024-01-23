@@ -1,0 +1,8 @@
+[all]
+18.222.65.98   meu_hostname=captura-respostas-bounces ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+3.144.199.133   meu_hostname=ms-voip ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+3.145.119.17   meu_hostname=Cooktop ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+18.191.246.41   meu_hostname=ms-descoberta ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+3.18.103.102   meu_hostname=Agenda ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+3.139.102.89   meu_hostname=Big-Data ansible_ssh_private_key_file=/home/usuario/pem/keypairOhio_RamperV3.pem  
+
